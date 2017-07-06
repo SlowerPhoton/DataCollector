@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "Form";
+}
+
+<h2>Form</h2>
+
+@using SberDat.Models
+@using System.Data
+@using System.Data.SqlClient
+
+@{ 
+    if (Session["ico"] == null)
+    {
+        Response.Redirect("~/Home/Index");
+        return;
+    }
+
+    string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["Database"].ConnectionString;
+
+    string query = "SELECT * FROM PASPORT WHERE id=@id;";
+
+    SqlConnection sqlConnection = new SqlConnection(connectionString);
+
+    SqlCommand sCmd = new SqlCommand(query, sqlConnection);
+    sCmd.Parameters.AddWithValue("@id", Session["id"]);
+
+    sqlConnection.Open();
+
+    SqlDataReader reader = sCmd.ExecuteReader();
+
+    if (reader.HasRows)
+    {
+        WriteLiteral("<p> You have sent your form already. You can <a href=\"/Home/Buildings\"> go back </a>. </p>");
+        sqlConnection.Close();
+        reader.Close();
+        return;
+    }
+
+    sqlConnection.Close();
+    reader.Close();
+}
+
+
+    <div align="right">
+        <p><a href="/Home/Buildings" class="btn btn-default">Return To Buildings View &raquo;</a></p>
+    </div>
+
+
+<form method="post" action="~/Home/FormSent">
+    <div id="help">
+
+    </div>
+    <p>
+        <b>Final inspection (approval) date:</b>
+        <br />
+        <input required pattern="[0-9][0-9]\.[0-9][0-9]\.[0-9]{4}" type="text" name="final_inspection"/> <!-- potential mistake here: what about 99. 99. 9999 -->
+        <img title="Use the DD.MM.YYYY format. This field is required." src="~/Content/help.svg" width="28" onmouseover="notify3()"/>
+        <script type="text/javascript"> testJavascript(); </script>
+    </p> 
+
+
+    @{
+        List<Element> elements = new List<Element>();
+        elements.Add(new Element("facade", true));
+        elements.Add(new Element("roof", true));
+        elements.Add(new Element("door & windows", true));
+        elements.Add(new Element("water connection", false));
+        elements.Add(new Element("gas", false));
+        elements.Add(new Element("wiring", false));
+
+        WriteLiteral(Element.generateTable(elements));
+    }
+
+    <input class="btn btn-default" type="submit" />
+
+</form>

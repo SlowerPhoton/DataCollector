@@ -1,0 +1,68 @@
+﻿@using System
+@using System.Data.OleDb
+@using System.Data.SqlClient
+@using System.Data
+@using DTOs
+
+@{
+    ViewBag.Title = "Buildings";
+}
+
+<h2>Buildings</h2>
+
+@{
+    string ico = Session["ico"] == null ? null : Session["ico"].ToString();
+    if (Request.Form["ico"] != null)
+    {
+        ico = Request.Form["ico"].ToString();
+    }
+    if (ico == null)
+    {
+        Response.Redirect("~/Home/Index");
+        return;
+    }
+}
+
+@using System.Configuration
+
+@{
+    string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["Database"].ConnectionString;
+
+    string query = "SELECT * FROM SVERENE_BUDOVY WHERE s_ico=@ICO;";
+
+    SqlConnection sqlConnection = new SqlConnection(connectionString);
+
+    SqlCommand sCmd = new SqlCommand(query, sqlConnection);
+    sCmd.Parameters.AddWithValue("@ICO", ico);
+
+    sqlConnection.Open();
+
+    SqlDataReader reader = sCmd.ExecuteReader();
+
+    List<string> columnNames = Enumerable.Range(0, reader.FieldCount).Select(reader.GetName).ToList();
+
+    List<BuildingDTO> buildings = new List<BuildingDTO>();
+    while (reader.Read())
+    {
+        BuildingDTO buildingDTO = new BuildingDTO(reader, connectionString);
+        buildings.Add(buildingDTO);
+    }
+
+    sqlConnection.Close();
+    reader.Close();
+
+    if (buildings.Count == 0)
+    {
+        WriteLiteral("<p> We were unable to find you in our database. Please <a href=\"/Home/Index\"> try again </a>. </p>");
+        return;
+    }
+
+    Session["ico"] = ico;
+}
+
+<div>
+    @{
+        WriteLiteral(BuildingDTO.generateForm(buildings));
+    }
+</div>
+

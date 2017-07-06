@@ -1,0 +1,41 @@
+﻿@{ 
+    if (Session["ico"] == null)
+    {
+        Response.Redirect("~/Home/Index");
+        return;
+    }
+}
+
+@{
+    ViewBag.Title = "Form Has Been Sent";
+}
+
+@using DTOs
+@using SberDat.Models
+
+@{ 
+    string final_inspection = Request.Form["final_inspection"];
+    string id = Session["id"].ToString();
+    List<ElementDTO> elements = new List<ElementDTO>();
+
+    foreach (string element_name in Element.elements)
+    {
+        string need_of_investment = Request.Form[element_name + "_need_of_investment"];
+        string state = Request.Form[element_name + "_state"];
+        string amount_of_investment = Request.Form[element_name + "_amount_of_investment"];
+        string notes = Request.Form[element_name + "_notes"];
+        ElementDTO elementDTO = new ElementDTO(element_name, state, need_of_investment, amount_of_investment, notes);
+        elements.Add(elementDTO);
+    }
+
+    PasportDTO pasport = new PasportDTO(final_inspection, id, elements);
+    string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["Database"].ConnectionString;
+    pasport.InsertIntoDatabase(connectionString);
+}
+
+<h2>Thank you</h2>
+
+<p>
+    Your formular has been sent. You can <a href="/Home/Buildings">go back</a>.
+</p>
+
