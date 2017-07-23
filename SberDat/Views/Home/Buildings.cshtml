@@ -1,8 +1,6 @@
-﻿@using System
-@using System.Data.OleDb
-@using System.Data.SqlClient
-@using System.Data
-@using DTOs
+﻿@using DTOs
+
+@model List<BuildingDTO>
 
 @{
     ViewBag.Title = "Buildings";
@@ -11,58 +9,95 @@
 <h2>Buildings</h2>
 
 @{
-    string ico = Session["ico"] == null ? null : Session["ico"].ToString();
-    if (Request.Form["ico"] != null)
+    if (Model.Count() == 0)
     {
-        ico = Request.Form["ico"].ToString();
-    }
-    if (ico == null)
-    {
-        Response.Redirect("~/Home/Index");
+        WriteLiteral("<p> We were unable to find you in our database. Please <a href=\"/Home/Index\">try again</a> with a different ICO. </p>");
         return;
     }
-}
-
-@using System.Configuration
-
-@{
-    string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["Database"].ConnectionString;
-
-    string query = "SELECT * FROM SVERENE_BUDOVY WHERE s_ico=@ICO;";
-
-    SqlConnection sqlConnection = new SqlConnection(connectionString);
-
-    SqlCommand sCmd = new SqlCommand(query, sqlConnection);
-    sCmd.Parameters.AddWithValue("@ICO", ico);
-
-    sqlConnection.Open();
-
-    SqlDataReader reader = sCmd.ExecuteReader();
-
-    List<string> columnNames = Enumerable.Range(0, reader.FieldCount).Select(reader.GetName).ToList();
-
-    List<BuildingDTO> buildings = new List<BuildingDTO>();
-    while (reader.Read())
-    {
-        BuildingDTO buildingDTO = new BuildingDTO(reader, connectionString);
-        buildings.Add(buildingDTO);
-    }
-
-    sqlConnection.Close();
-    reader.Close();
-
-    if (buildings.Count == 0)
-    {
-        WriteLiteral("<p> We were unable to find you in our database. Please <a href=\"/Home/Index\"> try again </a>. </p>");
-        return;
-    }
-
-    Session["ico"] = ico;
 }
 
 <div>
     @{
-        WriteLiteral(BuildingDTO.generateForm(buildings));
+        string[] columns = new string[] { "id", "subject_name", "municipality", "house_number", "use" };
     }
+    <table border="1">
+
+        <tr>
+            @foreach (string column in columns)
+            {
+                if (column.Equals("id"))
+                {
+                    <th> ID </th>
+                }
+                if (column.Equals("type"))
+                {
+                    <th> Type </th>
+                }
+                if (column.Equals("use"))
+                {
+                    <th> Use </th>
+                }
+                if (column.Equals("municipality"))
+                {
+                    <th> Municipality </th>
+                }
+                if (column.Equals("house_number"))
+                {
+                    <th> House Number </th>
+                }
+                if (column.Equals("plat"))
+                {
+                    <th> Plat </th>
+                }
+                if (column.Equals("subject_name"))
+                {
+                    <th> Name </th>
+                }
+                // not complete yet
+            }
+
+            <th></th>
+        </tr>
+
+
+            @foreach (BuildingDTO building in Model)
+            {
+            <tr>
+                @foreach (string column in columns)
+                {
+                    if (column.Equals("id"))
+                    {
+                        <td> @building.ID.ToString() </td>
+                    }
+                    if (column.Equals("type"))
+                    {
+                        <td> @building.Type</td>
+                    }
+                    if (column.Equals("use"))
+                    {
+                        <td> @building.Use </td>
+                    }
+                    if (column.Equals("municipality"))
+                    {
+                        <td> @building.Municipality </td>
+                    }
+                    if (column.Equals("house_number"))
+                    {
+                        <td> @building.HouseNumber </td>
+                    }
+                    if (column.Equals("plat"))
+                    {
+                        <td> @building.Plat </td>
+                    }
+                    if (column.Equals("subject_name"))
+                    {
+                        <td> @building.SubjectName </td>
+                    }                  
+                }
+                <td><a href=/Home/Form/@building.ID.ToString()><button class="btn btn-default">Submit Form</button></a></td>
+            </tr>
+            }
+
+    </table>
 </div>
 

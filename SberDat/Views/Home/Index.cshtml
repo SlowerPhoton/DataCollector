@@ -8,17 +8,15 @@
         <p>
             When logged in you can view and report the state of buildings under your control.
         </p>
-            <form id="login" method="post" action="~/Home/Buildings">
-                <div class="container">
-                    <label><b>ICO</b></label>
-                    <input autofocus type="text" placeholder="Enter Your ICO" name="ico" required>
-                    <button type="submit">Login</button>
-                </div>
-            </form>
+
+        @using (Html.BeginForm("Login", "Home", FormMethod.Post))
+        {
+            <div class="container">
+                <label><b>ICO</b></label>
+                <input autofocus type="text" placeholder="Enter Your ICO" name="ico" required>
+                <button type="submit">Login</button>
+            </div>
+        }
+
     </div>
-    <div id="help">
-        
-    </div>
-    <script type="text/javascript" src="~/Scripts/formScripts.js"></script>
-    <script> testJavascript(); </script>
 </div>

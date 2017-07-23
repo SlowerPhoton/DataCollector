@@ -9,7 +9,7 @@ using API;
 using API.Controllers;
 
 namespace API.Tests.Controllers
-{
+{/*
     [TestClass]
     public class ValuesControllerTest
     {
@@ -77,5 +77,5 @@ namespace API.Tests.Controllers
 
             // Assert
         }
-    }
+    }*/
 }

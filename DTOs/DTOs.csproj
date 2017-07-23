@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildingDTO.cs" />
+    <Compile Include="Database.cs" />
+    <Compile Include="SpecifiedElementDTO.cs" />
     <Compile Include="ElementDTO.cs" />
     <Compile Include="PasportDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
